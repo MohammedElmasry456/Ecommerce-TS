@@ -1,25 +1,27 @@
 import express from "express";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
+import connectDatabase from "./config/database";
+import mountRoutes from "./routes";
+import { Server } from "http";
 
 const app: express.Application = express();
-dotenv.config();
 
-mongoose
-  .connect(process.env.DB!)
-  .then((link) => {
-    console.log(`Database connected successfully | ${link.connection.host}`);
-  })
-  .catch((err: Error) => {
-    console.log(err);
-  });
+let server: Server;
+
+dotenv.config();
+connectDatabase();
 
 app.use(express.json());
+mountRoutes(app);
 
-app.get("/", (req: express.Request, res: express.Response) => {
-  res.json({ message: "hello world" });
+server = app.listen(process.env.PORT, () => {
+  console.log(`App Is Listen On Port ${process.env.PORT}`);
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Port ${process.env.PORT} Listening`);
+process.on("unhandledRejection", (err: Error) => {
+  console.error(`unhandled Rejection Error ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.error("server shutting down ....");
+    process.exit(1);
+  });
 });
