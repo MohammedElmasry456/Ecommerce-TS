@@ -2,6 +2,7 @@ import { check } from "express-validator";
 import validatorMiddleware from "../../middlewares/validatorMiddleware";
 import { RequestHandler } from "express";
 import subcategoryModel from "../../models/subcategoryModel";
+import { SubCategory } from "../../interfaces/subcategory";
 
 export const createCategoryValidator: RequestHandler[] = [
   check("name")
@@ -42,12 +43,12 @@ export const deleteCategoryValidator: RequestHandler[] = [
     .custom(async (val) => {
       const subcategories = await subcategoryModel.find({ category: val });
       if (subcategories.length > 0) {
-        await Promise.all(
-          subcategories.map(async (el) => {
-            await subcategoryModel.findByIdAndDelete(el._id);
-          })
-        );
+        const bulkOptions = subcategories.map((subcategory: SubCategory) => ({
+          deleteOne: { filter: { _id: subcategory._id } },
+        }));
+        await subcategoryModel.bulkWrite(bulkOptions);
       }
+      return true;
     }),
   validatorMiddleware,
 ];

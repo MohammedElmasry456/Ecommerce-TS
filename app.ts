@@ -1,3 +1,4 @@
+import * as All from "./interfaces";
 import express from "express";
 import dotenv from "dotenv";
 import connectDatabase from "./config/database";

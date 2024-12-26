@@ -18,4 +18,9 @@ const subcategorySchema: Schema = new Schema<SubCategory>(
   { timestamps: true }
 );
 
+subcategorySchema.pre<SubCategory>(/^find/, function (next) {
+  this.populate({ path: "category", select: "name" });
+  next();
+});
+
 export default model<SubCategory>("subcategories", subcategorySchema);

@@ -1,58 +1,24 @@
-import { Request, Response, NextFunction } from "express";
 import { Category } from "../interfaces/category";
 import categoryModel from "../models/categoryModel";
-import asyncHandler from "express-async-handler";
-import ApiError from "../utils/apiError";
+import {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} from "./refactorHandler";
 
 //create category
-export const createCategory = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const newCategory: Category = await categoryModel.create(req.body);
-    res.status(201).json({ data: newCategory });
-  }
-);
+export const createCategory = createOne<Category>(categoryModel);
 
 // get categories
-export const getCategories = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const categories = await categoryModel.find();
-    res.status(200).json({ data: categories });
-  }
-);
+export const getCategories = getAll<Category>(categoryModel, "categories");
 
 // get category
-export const getCategory = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const category = await categoryModel.findById(req.params.id);
-    if (!category) {
-      return next(new ApiError("category not found", 404));
-    }
-    res.status(200).json({ data: category });
-  }
-);
+export const getCategory = getOne<Category>(categoryModel);
 
 // update category
-export const updateCategory = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const category = await categoryModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!category) {
-      return next(new ApiError("category not found", 404));
-    }
-    res.status(200).json({ data: category });
-  }
-);
+export const updateCategory = updateOne<Category>(categoryModel);
 
 // delete category
-export const deleteCategory = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const category = await categoryModel.findByIdAndDelete(req.params.id);
-    if (!category) {
-      return next(new ApiError("category not found", 404));
-    }
-    res.status(204).json();
-  }
-);
+export const deleteCategory = deleteOne<Category>(categoryModel);

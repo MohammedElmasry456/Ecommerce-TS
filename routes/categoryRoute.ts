@@ -12,8 +12,11 @@ import {
   getCategoryValidator,
   updateCategoryValidator,
 } from "../utils/validation/categoryValidator";
+import subcategoryRouter from "./subcategoryRoute";
 
 const CategoryRouter: Router = Router();
+
+CategoryRouter.use("/:categoryId/subcategories", subcategoryRouter);
 
 CategoryRouter.route("/")
   .post(createCategoryValidator, createCategory)
