@@ -24,14 +24,19 @@ export const getAll = <modelType>(model: Model<any>, modelName: string) =>
         model.find(filterData),
         req.query
       )
+        .filter()
         .sort()
         .limitField()
         .search(modelName);
 
-      const { mongooseQuery } = apiFeatures;
+      apiFeatures.pagination(await apiFeatures.count());
+
+      const { mongooseQuery, paginationResult } = apiFeatures;
       const documents: modelType[] = await mongooseQuery;
 
-      res.status(200).json({ data: documents });
+      res
+        .status(200)
+        .json({ length: documents.length, paginationResult, data: documents });
     }
   );
 

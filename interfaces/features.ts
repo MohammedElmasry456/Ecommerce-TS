@@ -11,3 +11,11 @@ export interface QueryType {
   $or?: Array<{ [key: string]: RegExp }>;
   [key: string]: any;
 }
+
+export interface PaginationType {
+  totalPages?: number;
+  limit?: number;
+  currentPage?: number;
+  next?: number;
+  prev?: number;
+}
