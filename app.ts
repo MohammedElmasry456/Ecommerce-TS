@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDatabase from "./config/database";
 import mountRoutes from "./routes";
 import { Server } from "http";
+import path from "path";
 
 const app: express.Application = express();
 
@@ -13,6 +14,7 @@ dotenv.config();
 connectDatabase();
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "uploads")));
 mountRoutes(app);
 
 server = app.listen(process.env.PORT, () => {

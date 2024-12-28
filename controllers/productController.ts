@@ -1,5 +1,5 @@
+import asyncHandler from "express-async-handler";
 import { Request, Response, NextFunction } from "express";
-import { FilterData } from "../interfaces/filterData";
 import {
   createOne,
   deleteOne,
@@ -9,20 +9,42 @@ import {
 } from "./refactorHandler";
 import { Product } from "../interfaces/product";
 import productModel from "../models/productModel";
-import multer from "multer";
+import { uploadMultiImages } from "../middlewares/multerMiddleware";
+import sharp from "sharp";
 
-const multerStorage = multer.diskStorage({
-  destination: (req: Request, file: any, cb: any) => {
-    cb(null, "uploads");
-  },
-  filename: (req: Request, file: any, cb: any) => {
-    const ext = file.mimetype.split("/")[1];
-    const fileName = `Products-${Date.now()}-cover.${ext}`;
-    cb(null, fileName);
-  },
-});
+export const uploadImages = uploadMultiImages([
+  { name: "cover", maxCount: 1 },
+  { name: "images", maxCount: 5 },
+]);
 
-export const uploadImage = multer({ storage: multerStorage }).single("cover");
+export const resizeImage = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.files) {
+      if (req.files.cover) {
+        const fileName = `product-${Date.now()}-cover.png`;
+        await sharp(req.files.cover[0].buffer)
+          .toFormat("png")
+          .png({ quality: 90 })
+          .toFile(`uploads/products/${fileName}`);
+        req.body.cover = fileName;
+      }
+      if (req.files.images) {
+        req.body.images = [];
+        await Promise.all(
+          req.files.images.map(async (img: any, index: number) => {
+            const imgName = `product-${Date.now()}-N(${index + 1}).png`;
+            await sharp(img.buffer)
+              .toFormat("png")
+              .png({ quality: 90 })
+              .toFile(`uploads/products/${imgName}`);
+            req.body.images.push(imgName);
+          })
+        );
+      }
+    }
+    next();
+  }
+);
 
 //create Product
 export const createProduct = createOne<Product>(productModel);

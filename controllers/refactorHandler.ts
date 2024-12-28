@@ -4,6 +4,7 @@ import ApiError from "../utils/apiError";
 import { Model } from "mongoose";
 import { FilterData } from "../interfaces/filterData";
 import Features from "../utils/features";
+import { deleteImage } from "../utils/deleteImage";
 
 export const createOne = <modelType>(model: Model<any>) =>
   asyncHandler(
@@ -54,14 +55,19 @@ export const getOne = <modelType>(model: Model<any>) =>
 export const updateOne = <modelType>(model: Model<any>) =>
   asyncHandler(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      const prevDocument: modelType | null = await model.findById(
+        req.params.id
+      );
+      if (!prevDocument) {
+        return next(new ApiError("document not found", 404));
+      }
+      deleteImage(model, prevDocument, req);
       const document: modelType | null = await model.findByIdAndUpdate(
         req.params.id,
         req.body,
         { new: true }
       );
-      if (!document) {
-        return next(new ApiError("document not found", 404));
-      }
+
       res.status(200).json({ data: document });
     }
   );
@@ -75,6 +81,7 @@ export const deleteOne = <modelType>(model: Model<any>) =>
       if (!document) {
         return next(new ApiError("document not found", 404));
       }
+      deleteImage(model, document, req);
       res.status(204).json();
     }
   );

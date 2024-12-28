@@ -62,6 +62,27 @@ const productSchema: Schema = new Schema<Product>(
   { timestamps: true }
 );
 
+const imageUrl = (document: Product) => {
+  if (document.images) {
+    const url: string[] = [];
+    document.images.map((el: string) => {
+      url.push(`${process.env.BASE_URL}/products/${el}`);
+    });
+    document.images = url;
+  }
+  if (document.cover) {
+    const url: string = `${process.env.BASE_URL}/products/${document.cover}`;
+    document.cover = url;
+  }
+};
+
+productSchema.post("init", (document: Product) => {
+  imageUrl(document);
+});
+productSchema.post("save", (document: Product) => {
+  imageUrl(document);
+});
+
 productSchema.pre<Product>(/^find/, function (next) {
   this.populate({ path: "category", select: "name" });
   this.populate({ path: "subcategory", select: "name" });

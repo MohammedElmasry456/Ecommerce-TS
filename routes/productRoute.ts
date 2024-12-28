@@ -4,8 +4,9 @@ import {
   deleteProduct,
   getProduct,
   getProducts,
+  resizeImage,
   updateProduct,
-  uploadImage,
+  uploadImages,
 } from "../controllers/productController";
 import {
   createProductValidator,
@@ -18,13 +19,13 @@ const productRouter: Router = Router();
 
 productRouter
   .route("/")
-  .post(uploadImage, createProductValidator, createProduct)
+  .post(uploadImages, resizeImage, createProductValidator, createProduct)
   .get(getProducts);
 
 productRouter
   .route("/:id")
   .get(getProductValidator, getProduct)
-  .put(updateProductValidator, updateProduct)
+  .put(uploadImages, resizeImage, updateProductValidator, updateProduct)
   .delete(deleteProductValidator, deleteProduct);
 
 export default productRouter;

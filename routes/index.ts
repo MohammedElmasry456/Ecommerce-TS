@@ -4,11 +4,13 @@ import subcategoryRouter from "./subcategoryRoute";
 import ApiError from "../utils/apiError";
 import globalError from "../middlewares/globalErrors";
 import productRouter from "./productRoute";
+import userRouter from "./userRoute";
 
 const mountRoutes = (app: Application) => {
   app.use("/api/v1/categories", CategoryRouter);
   app.use("/api/v1/subcategories", subcategoryRouter);
   app.use("/api/v1/products", productRouter);
+  app.use("/api/v1/users", userRouter);
   app.all("*", async (req: Request, res: Response, next: NextFunction) => {
     next(new ApiError(`The Route ${req.originalUrl} Not Found`, 404));
   });
