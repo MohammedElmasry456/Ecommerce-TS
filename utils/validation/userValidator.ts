@@ -1,3 +1,4 @@
+import bcryptjs from "bcryptjs";
 import { check } from "express-validator";
 import validatorMiddleware from "../../middlewares/validatorMiddleware";
 import { RequestHandler } from "express";
@@ -50,6 +51,11 @@ export const getUserValidator: RequestHandler[] = [
 ];
 
 export const updateUserValidator: RequestHandler[] = [
+  check("id")
+    .notEmpty()
+    .withMessage("Id Is Required")
+    .isMongoId()
+    .withMessage("Invalid Id"),
   check("name")
     .optional()
     .isLength({ min: 2, max: 50 })
@@ -57,11 +63,52 @@ export const updateUserValidator: RequestHandler[] = [
   check("active").optional().isBoolean().withMessage("Invalid Active Value"),
   validatorMiddleware,
 ];
+
 export const deleteUserValidator: RequestHandler[] = [
   check("id")
     .notEmpty()
     .withMessage("Id Is Required")
     .isMongoId()
     .withMessage("Invalid Id"),
+  validatorMiddleware,
+];
+
+export const updateLoggedUserValidator: RequestHandler[] = [
+  check("name")
+    .optional()
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Length Must Be Between 2 and 50"),
+  validatorMiddleware,
+];
+
+export const changeLoggedUserPasswordValidator: RequestHandler[] = [
+  check("currentPassword")
+    .notEmpty()
+    .withMessage("current Password Is Required")
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Length Current Password Must Be Between 6 and 20")
+    .custom(async (val, { req }) => {
+      const match = await bcryptjs.compare(val, req.user.password);
+      if (!match) {
+        throw new Error("current password not corrent");
+      }
+      return true;
+    }),
+  check("password")
+    .notEmpty()
+    .withMessage("Password Is Required")
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Length Password Must Be Between 6 and 20")
+    .custom((val, { req }) => {
+      if (val !== req.body.confirmPassword) {
+        throw new Error("password not equal the confirm");
+      }
+      return true;
+    }),
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("confirm Password Is Required")
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Length Confirm Password Must Be Between 6 and 20"),
   validatorMiddleware,
 ];

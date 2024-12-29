@@ -13,18 +13,41 @@ import {
   getSubcategoryValidator,
   updateSubcategoryValidator,
 } from "../utils/validation/subcategoryValidator";
+import {
+  allowedTo,
+  checkActive,
+  protectRoute,
+} from "../controllers/authController";
 
 const subcategoryRouter: Router = Router({ mergeParams: true });
 
 subcategoryRouter
   .route("/")
-  .post(createSubcategoryValidator, createSubcategory)
+  .post(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    createSubcategoryValidator,
+    createSubcategory
+  )
   .get(filterData, getSubcategories);
 
 subcategoryRouter
   .route("/:id")
   .get(getSubcategoryValidator, getSubcategory)
-  .put(updateSubcategoryValidator, updateSubcategory)
-  .delete(deleteSubcategoryValidator, deleteSubcategory);
+  .put(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    updateSubcategoryValidator,
+    updateSubcategory
+  )
+  .delete(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    deleteSubcategoryValidator,
+    deleteSubcategory
+  );
 
 export default subcategoryRouter;

@@ -13,18 +13,41 @@ import {
   updateCategoryValidator,
 } from "../utils/validation/categoryValidator";
 import subcategoryRouter from "./subcategoryRoute";
+import {
+  allowedTo,
+  checkActive,
+  protectRoute,
+} from "../controllers/authController";
 
 const CategoryRouter: Router = Router();
 
 CategoryRouter.use("/:categoryId/subcategories", subcategoryRouter);
 
 CategoryRouter.route("/")
-  .post(createCategoryValidator, createCategory)
+  .post(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    createCategoryValidator,
+    createCategory
+  )
   .get(getCategories);
 
 CategoryRouter.route("/:id")
   .get(getCategoryValidator, getCategory)
-  .put(updateCategoryValidator, updateCategory)
-  .delete(deleteCategoryValidator, deleteCategory);
+  .put(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    updateCategoryValidator,
+    updateCategory
+  )
+  .delete(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    deleteCategoryValidator,
+    deleteCategory
+  );
 
 export default CategoryRouter;

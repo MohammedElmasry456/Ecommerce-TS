@@ -14,18 +14,45 @@ import {
   getProductValidator,
   updateProductValidator,
 } from "../utils/validation/productValidator";
+import {
+  allowedTo,
+  checkActive,
+  protectRoute,
+} from "../controllers/authController";
 
 const productRouter: Router = Router();
 
 productRouter
   .route("/")
-  .post(uploadImages, resizeImage, createProductValidator, createProduct)
+  .post(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    uploadImages,
+    resizeImage,
+    createProductValidator,
+    createProduct
+  )
   .get(getProducts);
 
 productRouter
   .route("/:id")
   .get(getProductValidator, getProduct)
-  .put(uploadImages, resizeImage, updateProductValidator, updateProduct)
-  .delete(deleteProductValidator, deleteProduct);
+  .put(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    uploadImages,
+    resizeImage,
+    updateProductValidator,
+    updateProduct
+  )
+  .delete(
+    protectRoute,
+    checkActive,
+    allowedTo("admin", "manager"),
+    deleteProductValidator,
+    deleteProduct
+  );
 
 export default productRouter;

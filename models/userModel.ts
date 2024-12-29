@@ -52,4 +52,11 @@ userSchema.pre<User>("save", async function (next) {
   next();
 });
 
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const obj = user.toObject();
+  delete obj["password"];
+  return obj;
+};
+
 export default model<User>("users", userSchema);
