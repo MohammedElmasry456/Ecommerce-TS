@@ -36,7 +36,7 @@ export const deleteImage = (model: Model<any>, document: any, req: Request) => {
       (document.image && Object.keys(req.body).length === 0)
     ) {
       const img: string = document.image.split("/").slice(-2).join("/");
-      fs.unlink(`uploads/${img}`, (err) => {
+      fs.unlink(`uploads/users/${img}`, (err) => {
         if (err) {
           console.log(err);
         }

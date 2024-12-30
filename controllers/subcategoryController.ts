@@ -18,6 +18,16 @@ export const filterData = (req: Request, res: Response, next: NextFunction) => {
   req.filterData = filterData;
   next();
 };
+export const setCategoryId = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.body.category) {
+    req.body.category = req.params.categoryId;
+  }
+  next();
+};
 
 //create subcategory
 export const createSubcategory = createOne<SubCategory>(subcategoryModel);

@@ -34,14 +34,15 @@ const userSchema: Schema = new Schema<User>(
 
 const imageUrl = (document: User) => {
   if (document.image) {
-    const url: string = `${process.env.BASE_URL}/users/${document.image}`;
+    const img: string = document.image.split("/").slice(-1)[0];
+    const url: string = `${process.env.BASE_URL}/users/${img}`;
     document.image = url;
   }
 };
 
-userSchema.post("init", (document: User) => {
-  imageUrl(document);
-});
+// userSchema.post("init", (document: User) => {
+//   imageUrl(document);
+// });
 userSchema.post("save", (document: User) => {
   imageUrl(document);
 });

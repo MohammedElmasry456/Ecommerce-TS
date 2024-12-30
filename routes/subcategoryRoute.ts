@@ -5,6 +5,7 @@ import {
   filterData,
   getSubcategories,
   getSubcategory,
+  setCategoryId,
   updateSubcategory,
 } from "../controllers/subcategoryController";
 import {
@@ -27,6 +28,7 @@ subcategoryRouter
     protectRoute,
     checkActive,
     allowedTo("admin", "manager"),
+    setCategoryId,
     createSubcategoryValidator,
     createSubcategory
   )

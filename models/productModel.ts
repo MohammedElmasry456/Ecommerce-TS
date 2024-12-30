@@ -38,8 +38,6 @@ const productSchema: Schema = new Schema<Product>(
     },
     ratingAverge: {
       type: Number,
-      min: 0,
-      max: 5,
       default: 0,
     },
     ratingCount: {

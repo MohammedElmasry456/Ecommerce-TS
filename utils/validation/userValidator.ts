@@ -112,3 +112,32 @@ export const changeLoggedUserPasswordValidator: RequestHandler[] = [
     .withMessage("Length Confirm Password Must Be Between 6 and 20"),
   validatorMiddleware,
 ];
+
+export const forgetPasswordValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email Is Required")
+    .isEmail()
+    .withMessage("Invalid Email"),
+  validatorMiddleware,
+];
+
+export const resetCodeValidator = [
+  check("password")
+    .notEmpty()
+    .withMessage("Password Is Required")
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Length Password Must Be Between 6 and 20")
+    .custom((val, { req }) => {
+      if (val !== req.body.confirmPassword) {
+        throw new Error("password not equal the confirm");
+      }
+      return true;
+    }),
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("confirm Password Is Required")
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Length Confirm Password Must Be Between 6 and 20"),
+  validatorMiddleware,
+];

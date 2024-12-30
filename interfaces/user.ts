@@ -10,7 +10,7 @@ export interface User extends Document {
   role: Role;
   active: boolean;
   passwordChangedAt: Date | number;
-  resetCode: string;
-  resetCodeExpireAt: Date | number;
-  verifyResetCode: boolean;
+  resetCode: string | undefined;
+  resetCodeExpireAt: Date | number | undefined;
+  verifyResetCode: boolean | undefined;
 }
