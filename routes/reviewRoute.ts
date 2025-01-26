@@ -13,6 +13,12 @@ import {
   setUserAndProductId,
   updateReview,
 } from "../controllers/reviewController";
+import {
+  createReviewValidator,
+  deleteReviewValidator,
+  getReviewValidator,
+  updateReviewValidator,
+} from "../utils/validation/reviewValidator";
 
 const reviewRouter: Router = Router({ mergeParams: true });
 
@@ -23,18 +29,26 @@ reviewRouter
     checkActive,
     allowedTo("user"),
     setUserAndProductId,
+    createReviewValidator,
     createReview
   )
   .get(filterReview, getReviews);
 
 reviewRouter
   .route("/:id")
-  .get(getReview)
-  .put(protectRoute, checkActive, allowedTo("user"), updateReview)
+  .get(getReviewValidator, getReview)
+  .put(
+    protectRoute,
+    checkActive,
+    allowedTo("user"),
+    updateReviewValidator,
+    updateReview
+  )
   .delete(
     protectRoute,
     checkActive,
     allowedTo("admin", "manager", "user"),
+    deleteReviewValidator,
     deleteReview
   );
 

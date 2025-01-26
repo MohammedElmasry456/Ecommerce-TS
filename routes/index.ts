@@ -7,6 +7,7 @@ import productRouter from "./productRoute";
 import userRouter from "./userRoute";
 import authRouter from "./authRoute";
 import reviewRouter from "./reviewRoute";
+import wishlistRouter from "./wishlistRoute";
 
 const mountRoutes = (app: Application) => {
   app.use("/api/v1/categories", CategoryRouter);
@@ -15,6 +16,7 @@ const mountRoutes = (app: Application) => {
   app.use("/api/v1/users", userRouter);
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/reviews", reviewRouter);
+  app.use("/api/v1/wishlist", wishlistRouter);
   app.all("*", async (req: Request, res: Response, next: NextFunction) => {
     next(new ApiError(`The Route ${req.originalUrl} Not Found`, 404));
   });

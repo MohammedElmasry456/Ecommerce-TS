@@ -57,8 +57,19 @@ const productSchema: Schema = new Schema<Product>(
       required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    id: false,
+  }
 );
+
+productSchema.virtual("reviews", {
+  ref: "reviews",
+  foreignField: "product",
+  localField: "_id",
+});
 
 const imageUrl = (document: Product) => {
   if (document.images) {

@@ -5,6 +5,7 @@ import { Model } from "mongoose";
 import { FilterData } from "../interfaces/filterData";
 import Features from "../utils/features";
 import { deleteImage } from "../utils/deleteImage";
+import reviewModel from "../models/reviewModel";
 
 export const createOne = <modelType>(model: Model<any>) =>
   asyncHandler(
@@ -41,10 +42,14 @@ export const getAll = <modelType>(model: Model<any>, modelName: string) =>
     }
   );
 
-export const getOne = <modelType>(model: Model<any>) =>
+export const getOne = <modelType>(model: Model<any>, option?: string) =>
   asyncHandler(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-      const document: modelType | null = await model.findById(req.params.id);
+      let query = model.findById(req.params.id);
+      if (option) {
+        query = query.populate(option);
+      }
+      const document: modelType | null = await query;
       if (!document) {
         return next(new ApiError("document not found", 404));
       }
@@ -62,12 +67,11 @@ export const updateOne = <modelType>(model: Model<any>) =>
         return next(new ApiError("document not found", 404));
       }
       deleteImage(model, prevDocument, req);
-      const document: modelType | null = await model.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-      );
+      const document = await model.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
 
+      document.save();
       res.status(200).json({ data: document });
     }
   );
@@ -75,13 +79,14 @@ export const updateOne = <modelType>(model: Model<any>) =>
 export const deleteOne = <modelType>(model: Model<any>) =>
   asyncHandler(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-      const document: modelType | null = await model.findByIdAndDelete(
-        req.params.id
-      );
+      const document = await model.findByIdAndDelete(req.params.id);
       if (!document) {
         return next(new ApiError("document not found", 404));
       }
       deleteImage(model, document, req);
+      if (model === reviewModel) {
+        await (model as any).calcAvgRating(document.product);
+      }
       res.status(204).json();
     }
   );

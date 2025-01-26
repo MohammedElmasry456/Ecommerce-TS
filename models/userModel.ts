@@ -24,6 +24,12 @@ const userSchema: Schema = new Schema<User>(
     image: String,
     role: { type: String, enum: ["user", "admin", "manager"], default: "user" },
     active: { type: Boolean, default: true },
+    wishlist: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "products",
+      },
+    ],
     passwordChangedAt: Date,
     resetCode: String,
     resetCodeExpireAt: Date,
